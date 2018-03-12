@@ -1,3 +1,10 @@
+<!-- GSTIN
+Type of Entity - Proprietor, HUF, Partnership Firm, LLP, Company, AOP, BOI, Local Authority, Government
+Legal Name/ Trade Name of Business
+Category of Taxpayer - Regular, Composition, Non-Resident, ISD
+ -->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,20 +21,31 @@
 <body>
     <div class="container">
 
-        <h1>Coursetro Instructor</h1>
+        <h1>Company Details</h1>
         <span id="countIns"></span>
 
-        <h2 class="instructor"></h2>
+        <h2 id="business"></h2>
         <span id="insTrans"></span>
         <hr>
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
 
-        <label for="fName" class="col-lg-2 control-label">First Name</label>
-        <input id="fName" type="text">
+        <label for="GSTIN" class="col-lg-2 control-label">GSTIN</label>
+        <input id="GSTIN" type="text">
 
-        <label for="lName" class="col-lg-2 control-label">Last Name</label>
-        <input id="lName" type="text">
+        <label for="Entity" class="col-lg-2 control-label">Type of Entity</label>
+        <select>
+        	<option value="Proprietor">Proprietor</option>
+        	<option value="HUF">HUF</option>
+        	<option value="Partnership Firm">Partnership Firm</option>
+        	<option value=""></option>
+        	<option value=""></option>
+        	<option value=""></option>
+        	<option value=""></option>
+        	<option value=""></option>
+        	<option value=""></option>
+        </select>
+        <input id="Entity" type="text">
 
         <label for="age" class="col-lg-2 control-label">Instructor Age</label>
         <input id="age" type="text">
