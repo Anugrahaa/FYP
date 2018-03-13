@@ -1,10 +1,3 @@
-<!-- GSTIN
-Type of Entity - Proprietor, HUF, Partnership Firm, LLP, Company, AOP, BOI, Local Authority, Government
-Legal Name/ Trade Name of Business
-Category of Taxpayer - Regular, Composition, Non-Resident, ISD
- -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,7 +22,7 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
         <div class="container">
         <label for="ProductID" class="col-lg-2 control-label">ProductID</label>
-        <input id="ProudctID" type="text">
+        <input id="ProductID" type="text">
 
         <label for="hsn" class="col-lg-2 control-label">hsn</label>
         <input id="hsn" type="text">
@@ -59,135 +52,239 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
             web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
         }
 
-        web3.eth.defaultAccount = web3.eth.accounts[0];
+        web3.eth.defaultAccount = web3.eth.accounts[1];
 
-        var CoursetroContract = web3.eth.contract([
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_address",
-                "type": "address"
-            }
-        ],
-        "name": "getInstructor",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "name": "",
-                "type": "bytes16"
-            },
-            {
-                "name": "",
-                "type": "bytes16"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "getInstructors",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "instructorAccts",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "countInstructors",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
+        var TransactionContract = web3.eth.contract([
     {
         "constant": false,
         "inputs": [
             {
-                "name": "_address",
-                "type": "address"
+                "name": "_GSTIN",
+                "type": "bytes16"
             },
             {
-                "name": "_age",
+                "name": "_name",
+                "type": "bytes16"
+            },
+            {
+                "name": "_category",
                 "type": "uint256"
-            },
-            {
-                "name": "_fName",
-                "type": "bytes16"
-            },
-            {
-                "name": "_lName",
-                "type": "bytes16"
             }
         ],
-        "name": "setInstructor",
+        "name": "setBusiness",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
     },
     {
-        "anonymous": false,
+        "constant": false,
         "inputs": [
             {
-                "indexed": false,
-                "name": "fName",
+                "name": "_productid",
                 "type": "bytes16"
             },
             {
-                "indexed": false,
-                "name": "lName",
+                "name": "_hsn",
                 "type": "bytes16"
             },
             {
-                "indexed": false,
-                "name": "age",
+                "name": "_name",
+                "type": "bytes16"
+            },
+            {
+                "name": "_rate",
                 "type": "uint256"
             }
         ],
-        "name": "instructorInfo",
-        "type": "event"
+        "name": "setProduct",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "from_GSTIN",
+                "type": "bytes16"
+            },
+            {
+                "name": "to_GSTIN",
+                "type": "bytes16"
+            },
+            {
+                "name": "_productid",
+                "type": "bytes16"
+            },
+            {
+                "name": "_quantity",
+                "type": "uint256"
+            }
+        ],
+        "name": "setTransaction",
+        "outputs": [
+            {
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "gstin",
+                "type": "bytes16"
+            }
+        ],
+        "name": "getBusiness",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getBusinesses",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "prodid",
+                "type": "bytes16"
+            }
+        ],
+        "name": "getProduct",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getProducts",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "transactionid",
+                "type": "uint256"
+            }
+        ],
+        "name": "getTransaction",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "GSTIN",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "productid",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
     }
 ]);
 
         // var Coursetro = CoursetroContract.at('0x67f72425c7dabaf6386ea916257ebf622ff213d0');
-        var Transaction = TransactionContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
+        var Transaction = TransactionContract.at('0x5e728b5ed9685ef151c76ca61892202faef2d218');
         console.log(Transaction);
 
 
@@ -196,7 +293,9 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
             Transaction.setProduct($("#ProductID").val(), $("#hsn").val(), $("#name").val(),$("#rate").val(), (err, res) => {
                 if (res) 
                     $("#details").html("Processing the request to add product<br>Refresh for other operations.");
-        })
+                else if(err)
+                    $("#details").html(err);
+        });
         });
 
         $("#button2").click(function() {
@@ -205,11 +304,14 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
                 {
                     
                     var pid = res;
-                    for(var i=0; i<a.length; i++){
+                    console.log(res.length);
+                    for(var i=1; i<pid.length; i++){
+                        console.log(pid[i]);
                        Transaction.getProduct(pid[i], (err,res) => {
                        if(res)
-                        {$("details").html("<b>Product<b><hr>HSN="+res[0]+"<br>Name="+res[1]+"<br>Rate="+res[2]+"<br>");
-                    }); 
+                        {$('#details').append("<b>Product<b><hr>HSN="+web3.toAscii(res[0])+"<br>Name="+web3.toAscii(res[1])+"<br>Rate="+res[2]+"<br>");
+                    }
+                }); 
                     }
                     
                     

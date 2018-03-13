@@ -1,14 +1,13 @@
-pragma solidity ^0.4.18
+pragma solidity ^0.4.18;
 
-
-
-Contract Transaction{
+contract Transaction{
+    
 	struct Business{
 		bytes16 name;
 		uint category;
 	}
 
-	mapping(bytes16 => business) businesses;
+	mapping(bytes16 => Business) businesses;
 	bytes16[] public GSTIN;
 
 	struct Product{
@@ -16,7 +15,7 @@ Contract Transaction{
 		bytes16 name;
 		uint rate;
 	}
-	mapping(bytes16 => product) products;
+	mapping(bytes16 => Product) products;
 	bytes16[] public productid;
 
 	struct Transaction{
@@ -25,7 +24,7 @@ Contract Transaction{
 		bytes16 p;
 		uint quantity;
 	}
-	mapping(uint => transaction) transactions;
+	mapping(uint => Transaction) transactions;
 	uint nexttransid;
 
 	function setBusiness(bytes16 _GSTIN, bytes16 _name, uint _category){
@@ -59,11 +58,11 @@ Contract Transaction{
 		return id;
 	}
 
-	function getBusinesses() public view returns (bytes16){
+	function getBusinesses() public view returns (bytes16[]){
 		return GSTIN;
 	}
 
-	function getProducts() public view returns (bytes16) {
+	function getProducts() public view returns (bytes16[]) {
 		return productid;
 	}
 
