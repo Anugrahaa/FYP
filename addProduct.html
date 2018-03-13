@@ -1,0 +1,223 @@
+<!-- GSTIN
+Type of Entity - Proprietor, HUF, Partnership Firm, LLP, Company, AOP, BOI, Local Authority, Government
+Legal Name/ Trade Name of Business
+Category of Taxpayer - Regular, Composition, Non-Resident, ISD
+ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1>Product Details</h1>
+
+        <h2 id="products"></h2>
+        <hr>
+
+        <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+        <div class="container">
+        <label for="ProductID" class="col-lg-2 control-label">ProductID</label>
+        <input id="ProudctID" type="text">
+
+        <label for="hsn" class="col-lg-2 control-label">hsn</label>
+        <input id="hsn" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Product Name</label>
+        <input id="name" type="text">
+
+        <label for="rate" class="col-lg-2 control-label">Price per unit</label>
+        <input id="rate" type="text">
+
+        <button id="button1">Update Product</button>
+        <button id="button2">View Products</button>
+    </div>
+    <div class="container"> 
+        <span id="details"></span>
+    </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+
+        var CoursetroContract = web3.eth.contract([
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_address",
+                "type": "address"
+            }
+        ],
+        "name": "getInstructor",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getInstructors",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "instructorAccts",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "countInstructors",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_address",
+                "type": "address"
+            },
+            {
+                "name": "_age",
+                "type": "uint256"
+            },
+            {
+                "name": "_fName",
+                "type": "bytes16"
+            },
+            {
+                "name": "_lName",
+                "type": "bytes16"
+            }
+        ],
+        "name": "setInstructor",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "fName",
+                "type": "bytes16"
+            },
+            {
+                "indexed": false,
+                "name": "lName",
+                "type": "bytes16"
+            },
+            {
+                "indexed": false,
+                "name": "age",
+                "type": "uint256"
+            }
+        ],
+        "name": "instructorInfo",
+        "type": "event"
+    }
+]);
+
+        // var Coursetro = CoursetroContract.at('0x67f72425c7dabaf6386ea916257ebf622ff213d0');
+        var Transaction = TransactionContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
+        console.log(Transaction);
+
+
+        $("#button1").click(function() {
+            $("#loader").show();
+            Transaction.setProduct($("#ProductID").val(), $("#hsn").val(), $("#name").val(),$("#rate").val(), (err, res) => {
+                if (res) 
+                    $("#details").html("Processing the request to add product<br>Refresh for other operations.");
+        })
+        });
+
+        $("#button2").click(function() {
+            Transaction.getProducts((err, res) => {
+                if(res)
+                {
+                    
+                    var pid = res;
+                    for(var i=0; i<a.length; i++){
+                       Transaction.getProduct(pid[i], (err,res) => {
+                       if(res)
+                        {$("details").html("<b>Product<b><hr>HSN="+res[0]+"<br>Name="+res[1]+"<br>Rate="+res[2]+"<br>");
+                    }); 
+                    }
+                    
+                    
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>
