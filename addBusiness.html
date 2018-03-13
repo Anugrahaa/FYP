@@ -1,10 +1,3 @@
-<!-- GSTIN
-Type of Entity - Proprietor, HUF, Partnership Firm, LLP, Company, AOP, BOI, Local Authority, Government
-Legal Name/ Trade Name of Business
-Category of Taxpayer - Regular, Composition, Non-Resident, ISD
- -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,47 +14,51 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
 <body>
     <div class="container">
 
-        <h1>Company Details</h1>
-        
-        <h2 id="business"></h2>
+        <h1>Business Details</h1>
         <hr>
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+        <div class="container">
+            <label for="GSTIN" class="col-lg-2 control-label">GSTIN</label>
+            <input id="GSTIN" type="text">
 
-        <label for="GSTIN" class="col-lg-2 control-label">GSTIN</label>
-        <input id="GSTIN" type="text">
+            <br>
+            <label for="entity" class="col-lg-2 control-label">Type of Entity</label>
+            <select id="entity">
+            	<option value="Proprietor">Proprietor</option>
+            	<option value="HUF">HUF</option>
+            	<option value="Partnership Firm">Partnership Firm</option>
+            	<option value="LLP">LLP</option>
+            	<option value="Company">Company</option>
+            	<option value="AOP">AOP</option>
+            	<option value="BOI">BOI</option>
+            	<option value="Local Authority">Local Authority</option>
+            	<option value="Government">Government</option>
+            </select>
 
-        <label for="entity" class="col-lg-2 control-label">Type of Entity</label>
-        <select id="entity">
-        	<option value="Proprietor">Proprietor</option>
-        	<option value="HUF">HUF</option>
-        	<option value="Partnership Firm">Partnership Firm</option>
-        	<option value="LLP">LLP</option>
-        	<option value="Company">Company</option>
-        	<option value="AOP">AOP</option>
-        	<option value="BOI">BOI</option>
-        	<option value="Local Authority">Local Authority</option>
-        	<option value="Government">Government</option>
-        </select>
+            <br><br>
 
-        <label for="name" class="col-lg-2 control-label">Legal Name/ Trade Name of Business</label>
-        <input id="name" type="text">
+            <label for="name" class="col-lg-2 control-label">Legal Name/<br>Trade Name of Business</label>
+            <input id="name" type="text">
 
-        <label for="category" class="col-lg-2 control-label">Category of taxpayer</label>
-        <select id="category">
-            <option value=0>Resident</option>
-            <option value=1>Composition</option>
-            <option value=2>Non-Resident</option>
-            <option value=3>ISD</option>
-            <option value=4>Tax Deductor</option>
-            <option value=5>E-commerce operator</option>
-            <option value=6>UN Agencies</option>
-        </select>
+            <label for="category" class="col-lg-2 control-label">Category of taxpayer</label>
+            <select id="category">
+                <option value=0>Resident</option>
+                <option value=1>Composition</option>
+                <option value=2>Non-Resident</option>
+                <option value=3>ISD</option>
+                <option value=4>Tax Deductor</option>
+                <option value=5>E-commerce operator</option>
+                <option value=6>UN Agencies</option>
+            </select>
 
-        <button id="button1">Update Business</button>
-        <button id="button2">View Businesses</button>
+            <button id="button1">Update Business</button>
+            <button id="button2">View Businesses</button>
+        </div>
+        <div class="container"> 
+            <span id="details"></span>
+        </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
     <script>
@@ -75,134 +72,240 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
 
         web3.eth.defaultAccount = web3.eth.accounts[0];
 
-        var CoursetroContract = web3.eth.contract([
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_address",
-                "type": "address"
-            }
-        ],
-        "name": "getInstructor",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "name": "",
-                "type": "bytes16"
-            },
-            {
-                "name": "",
-                "type": "bytes16"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "getInstructors",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "instructorAccts",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "countInstructors",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
+        
+        var TransactionContract = web3.eth.contract([
     {
         "constant": false,
         "inputs": [
             {
-                "name": "_address",
-                "type": "address"
+                "name": "_GSTIN",
+                "type": "bytes16"
             },
             {
-                "name": "_age",
+                "name": "_name",
+                "type": "bytes16"
+            },
+            {
+                "name": "_category",
                 "type": "uint256"
-            },
-            {
-                "name": "_fName",
-                "type": "bytes16"
-            },
-            {
-                "name": "_lName",
-                "type": "bytes16"
             }
         ],
-        "name": "setInstructor",
+        "name": "setBusiness",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
     },
     {
-        "anonymous": false,
+        "constant": false,
         "inputs": [
             {
-                "indexed": false,
-                "name": "fName",
+                "name": "_productid",
                 "type": "bytes16"
             },
             {
-                "indexed": false,
-                "name": "lName",
+                "name": "_hsn",
                 "type": "bytes16"
             },
             {
-                "indexed": false,
-                "name": "age",
+                "name": "_name",
+                "type": "bytes16"
+            },
+            {
+                "name": "_rate",
                 "type": "uint256"
             }
         ],
-        "name": "instructorInfo",
-        "type": "event"
+        "name": "setProduct",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "from_GSTIN",
+                "type": "bytes16"
+            },
+            {
+                "name": "to_GSTIN",
+                "type": "bytes16"
+            },
+            {
+                "name": "_productid",
+                "type": "bytes16"
+            },
+            {
+                "name": "_quantity",
+                "type": "uint256"
+            }
+        ],
+        "name": "setTransaction",
+        "outputs": [
+            {
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "gstin",
+                "type": "bytes16"
+            }
+        ],
+        "name": "getBusiness",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getBusinesses",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "prodid",
+                "type": "bytes16"
+            }
+        ],
+        "name": "getProduct",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getProducts",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "transactionid",
+                "type": "uint256"
+            }
+        ],
+        "name": "getTransaction",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "GSTIN",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "productid",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
     }
 ]);
 
         // var Coursetro = CoursetroContract.at('0x67f72425c7dabaf6386ea916257ebf622ff213d0');
-        var Coursetro = CoursetroContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
-        console.log(Coursetro);
+        var Transaction = TransactionContract.at('0x5e728b5ed9685ef151c76ca61892202faef2d218');
+        console.log(Transaction);
+
 
         $("#button1").click(function() {
             $("#loader").show();
@@ -218,17 +321,30 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
                 {
                     
                     var gstin = res;
-                    for(var i=0; i<a.length; i++){
+                    console.log(res.length);
+                    for(var i=0; i<gstin.length; i++){
+                        console.log(gstin[i]);
                        Transaction.getBusiness(gstin[i], (err,res) => {
-                       if(res)
-                        {$("details").html("<b>Business<b><hr>Name="+res[0]+"<br>Category="+res[1]+"<br>");
-                    }); 
-                    }
+                       if(res){
+                        $("#details").append("<br><b>Business</b><hr>Name="+web3.toAscii(res[0]));
+                        console.log(res[1]);
+                            switch(res[1].c[0]){
+                                case 0: $("#details").append("<br>Category=Resident<br>");console.log(res[1]); break;
+                                case 1: $("#details").append("<br>Category=Composition<br>"); break;
+                                case "2": $("#details").append("<br>Category=Non-Resident<br>"); break;
+                                case "3": $("#details").append("<br>Category=ISD<br>"); break;
+                                case "4": $("#details").append("<br>Category=Tax Deductor<br>"); break;
+                                case "5": $("#details").append("<br>Category=E-commerce<br>"); break;
+                                case "6": $("#details").append("<br>Category=UN Agencies<br>"); break;
+                            }
+                        } 
+                        });
                     
                     
                     }
-                });
+                }
             });
+        });
 
 
     </script>
