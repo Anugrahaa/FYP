@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container">
-
+        <div class="container">
         <h1>Transactions</h1>
 
         <h2 id="transactions"></h2>
@@ -30,12 +30,16 @@
         <label for="p" class="col-lg-2 control-label">ProductID</label>
         <input id="p" type="text">
 
-        <label for="quantity" class="col-lg-2 control-label">ProductID</label>
+        <label for="quantity" class="col-lg-2 control-label">Quantity</label>
         <input id="quantity" type="number">
 
         <button id="button1">Add Transaction</button>
         <button id="button2">Get Transaction</button>
+        </div>
 
+        <div class="container">
+            <span id="details"></span>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -51,152 +55,270 @@
 
         web3.eth.defaultAccount = web3.eth.accounts[0];
 
-        var CoursetroContract = web3.eth.contract([
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_address",
-                "type": "address"
-            }
-        ],
-        "name": "getInstructor",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "name": "",
-                "type": "bytes16"
-            },
-            {
-                "name": "",
-                "type": "bytes16"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "getInstructors",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "instructorAccts",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "countInstructors",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
+        var TransactionContract = web3.eth.contract([
     {
         "constant": false,
         "inputs": [
             {
-                "name": "_address",
-                "type": "address"
+                "name": "_GSTIN",
+                "type": "bytes16"
             },
             {
-                "name": "_age",
+                "name": "_name",
+                "type": "bytes16"
+            },
+            {
+                "name": "_category",
                 "type": "uint256"
-            },
-            {
-                "name": "_fName",
-                "type": "bytes16"
-            },
-            {
-                "name": "_lName",
-                "type": "bytes16"
             }
         ],
-        "name": "setInstructor",
+        "name": "setBusiness",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
     },
     {
-        "anonymous": false,
+        "constant": false,
         "inputs": [
             {
-                "indexed": false,
-                "name": "fName",
+                "name": "_productid",
                 "type": "bytes16"
             },
             {
-                "indexed": false,
-                "name": "lName",
+                "name": "_hsn",
                 "type": "bytes16"
             },
             {
-                "indexed": false,
-                "name": "age",
+                "name": "_name",
+                "type": "bytes16"
+            },
+            {
+                "name": "_rate",
                 "type": "uint256"
             }
         ],
-        "name": "instructorInfo",
-        "type": "event"
+        "name": "setProduct",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "from_GSTIN",
+                "type": "bytes16"
+            },
+            {
+                "name": "to_GSTIN",
+                "type": "bytes16"
+            },
+            {
+                "name": "_productid",
+                "type": "bytes16"
+            },
+            {
+                "name": "_quantity",
+                "type": "uint256"
+            }
+        ],
+        "name": "setTransaction",
+        "outputs": [
+            {
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "gstin",
+                "type": "bytes16"
+            }
+        ],
+        "name": "getBusiness",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getBusinesses",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "prodid",
+                "type": "bytes16"
+            }
+        ],
+        "name": "getProduct",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getProducts",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "transactionid",
+                "type": "uint256"
+            }
+        ],
+        "name": "getTransaction",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "bytes16"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "GSTIN",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "productid",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes16"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
     }
 ]);
 
         // var Coursetro = CoursetroContract.at('0x67f72425c7dabaf6386ea916257ebf622ff213d0');
-        var Coursetro = CoursetroContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
-        console.log(Coursetro);
+        var Transaction = TransactionContract.at('0x5e728b5ed9685ef151c76ca61892202faef2d218');
+        console.log(Transaction);
 
-        var transid;
+        var transid=1;
 
         $("#button1").click(function() {
             $("#loader").show();
-            transid = Transaction.setTransaction(web3.eth.defaultAccount, $("#fName").val(), $("#tName").val(),$("#p").val(),$("#quantity").val(), (err, res) => {
+            transid = Transaction.setTransaction($("#fName").val(), $("#tName").val(),$("#p").val(),$("#quantity").val(), (err, res) => {
                 if (err) 
+                {
                     $("#loader").hide();
+                    $("#details").html(err);
+                }
+                if(res){
+                    $("#loader").hide();
+                    transid = res;
+                    $("#details").html("Transacation pending. Refresh for other operations");
+                    $("#loader").hide();
+
+                }
+                    
         });
         });
 
         $("#button2").click(function() {
+            $("#details").html("<br>");
+            console.log(transid);
             for(var i=0; i<transid.length; i++){
                Transaction.getTransaction(i, (err,res) => {
                if(res){
-                    $("details").html("<b>Transaction<b><hr>From Business="+res[0]+"<br>To Business="+res[1]+"<br>ProductID="+res[2]+"<br>Product quantity"+res[3]+"<br>"); 
+                    $("details").html("<b>Transaction<b><hr>From Business="+web3.toAscii(res[0])+"<br>To Business="+web3.toAscii(res[1])+"<br>ProductID="+web3.toAscii(res[2])+"<br>Product quantity"+res[3]+"<br>"); 
                     }
             });
+           }
         });          
 
     </script>

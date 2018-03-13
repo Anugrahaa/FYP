@@ -291,6 +291,7 @@
         $("#button1").click(function() {
             $("#loader").show();
             Transaction.setProduct($("#ProductID").val(), $("#hsn").val(), $("#name").val(),$("#rate").val(), (err, res) => {
+                $("#loader").hide();
                 if (res) 
                     $("#details").html("Processing the request to add product<br>Refresh for other operations.");
                 else if(err)
@@ -298,6 +299,7 @@
         });
         });
         $("#button2").click(function() {
+            $("#details").html("");
             Transaction.getProducts((err, res) => {
                 if(res)
                 {
@@ -305,12 +307,12 @@
                     var pid = res;
                     console.log(res.length);
                     for(var i=1; i<pid.length; i++){
-                        console.log(pid[i]);
+                        console.log(web3.toAscii(pid[i]));
                        Transaction.getProduct(pid[i], (err,res) => {
                        if(res)
-                        {$('#details').append("<b>Product<b><hr>HSN="+web3.toAscii(res[0])+"<br>Name="+web3.toAscii(res[1])+"<br>Rate="+res[2]+"<br>");
+                        {$('#details').append("<b>Product<b><hr>HSN="+web3.toAscii(res[0])+"<br>Name="+web3.toAscii(res[1])+"<br>Rate="+res[2]+"<br><br>");
                     }
-                }); 
+                });
                     }
                     
                     
