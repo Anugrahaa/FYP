@@ -33,25 +33,31 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
         <label for="GSTIN" class="col-lg-2 control-label">GSTIN</label>
         <input id="GSTIN" type="text">
 
-        <label for="Entity" class="col-lg-2 control-label">Type of Entity</label>
+        <label for="entity" class="col-lg-2 control-label">Type of Entity</label>
         <select>
         	<option value="Proprietor">Proprietor</option>
         	<option value="HUF">HUF</option>
         	<option value="Partnership Firm">Partnership Firm</option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
+        	<option value="LLP">LLP</option>
+        	<option value="Company">Company</option>
+        	<option value="AOP">AOP</option>
+        	<option value="BOI">BOI</option>
+        	<option value="Local Authority">Local Authority</option>
+        	<option value="Government">Government</option>
         </select>
-        <input id="Entity" type="text">
 
-        <label for="age" class="col-lg-2 control-label">Instructor Age</label>
-        <input id="age" type="text">
+        <label for="category" class="col-lg-2 control-label">Instructor Age</label>
+        <select>
+            <option value=0>Resident</option>
+            <option value=1>Composition</option>
+            <option value=2>Non-Resident</option>
+            <option value=3>ISD</option>
+            <option value=4>Tax Deductor</option>
+            <option value=5>E-commerce operator</option>
+            <option value=6>UN Agencies</option>
+        </select>
 
-        <button id="button1">Update Instructor</button>
-        <button id="button2"> Get Instructors </button>
+        <button id="button">Add Business</button>
 
     </div>
 
