@@ -1,3 +1,10 @@
+<!-- GSTIN
+Type of Entity - Proprietor, HUF, Partnership Firm, LLP, Company, AOP, BOI, Local Authority, Government
+Legal Name/ Trade Name of Business
+Category of Taxpayer - Regular, Composition, Non-Resident, ISD
+ -->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,28 +21,31 @@
 <body>
     <div class="container">
 
-        <h1>Transactions</h1>
+        <h1>Product Details</h1>
 
-        <h2 id="transactions"></h2>
+        <h2 id="products"></h2>
         <hr>
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+        <div class="container">
+        <label for="ProductID" class="col-lg-2 control-label">ProductID</label>
+        <input id="ProudctID" type="text">
 
-        <label for="fName" class="col-lg-2 control-label">From Business GSTIN</label>
-        <input id="fName" type="text">
+        <label for="hsn" class="col-lg-2 control-label">hsn</label>
+        <input id="hsn" type="text">
 
-        <label for="tName" class="col-lg-2 control-label">To Business GSTIN</label>
-        <input id="tName" type="text">
+        <label for="name" class="col-lg-2 control-label">Product Name</label>
+        <input id="name" type="text">
 
-        <label for="p" class="col-lg-2 control-label">ProductID</label>
-        <input id="p" type="text">
+        <label for="rate" class="col-lg-2 control-label">Price per unit</label>
+        <input id="rate" type="text">
 
-        <label for="quantity" class="col-lg-2 control-label">ProductID</label>
-        <input id="quantity" type="number">
-
-        <button id="button1">Add Transaction</button>
-        <button id="button2">Get Transaction</button>
-
+        <button id="button1">Update Product</button>
+        <button id="button2">View Products</button>
+    </div>
+    <div class="container"> 
+        <span id="details"></span>
+    </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -177,27 +187,36 @@
 ]);
 
         // var Coursetro = CoursetroContract.at('0x67f72425c7dabaf6386ea916257ebf622ff213d0');
-        var Coursetro = CoursetroContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
-        console.log(Coursetro);
+        var Transaction = TransactionContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
+        console.log(Transaction);
 
-        var transid;
 
         $("#button1").click(function() {
             $("#loader").show();
-            transid = Transaction.setTransaction(web3.eth.defaultAccount, $("#fName").val(), $("#tName").val(),$("#p").val(),$("#quantity").val(), (err, res) => {
-                if (err) 
-                    $("#loader").hide();
+            Transaction.setProduct($("#ProductID").val(), $("#hsn").val(), $("#name").val(),$("#rate").val(), (err, res) => {
+                if (res) 
+                    $("#details").html("Processing the request to add product<br>Refresh for other operations.");
         });
         });
 
         $("#button2").click(function() {
-            for(var i=0; i<transid.length; i++){
-               Transaction.getTransaction(i, (err,res) => {
-               if(res){
-                    $("details").html("<b>Transaction<b><hr>From Business="+res[0]+"<br>To Business="+res[1]+"<br>ProductID="+res[2]+"<br>Product quantity"+res[3]+"<br>"); 
+            Transaction.getProducts((err, res) => {
+                if(res)
+                {
+                    
+                    var pid = res;
+                    for(var i=0; i<a.length; i++){
+                       Transaction.getProduct(pid[i], (err,res) => {
+                       if(res)
+                        {$("details").html("<b>Product<b><hr>HSN="+res[0]+"<br>Name="+res[1]+"<br>Rate="+res[2]+"<br>");
+                    }); 
+                    }
+                    
+                    
                     }
             });
-        });          
+        });
+
 
     </script>
 </body>
