@@ -14,26 +14,27 @@
 <body>
     <div class="container">
 
-        <h1>Coursetro Instructor</h1>
-        <span id="countIns"></span>
+        <h1>Transactions</h1>
 
-        <h2 class="instructor"></h2>
-        <span id="insTrans"></span>
+        <h2 id="transactions"></h2>
         <hr>
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
 
-        <label for="fName" class="col-lg-2 control-label">First Name</label>
+        <label for="fName" class="col-lg-2 control-label">From Business GSTIN</label>
         <input id="fName" type="text">
 
-        <label for="lName" class="col-lg-2 control-label">Last Name</label>
-        <input id="lName" type="text">
+        <label for="tName" class="col-lg-2 control-label">To Business GSTIN</label>
+        <input id="tName" type="text">
 
-        <label for="age" class="col-lg-2 control-label">Instructor Age</label>
-        <input id="age" type="text">
+        <label for="p" class="col-lg-2 control-label">ProductID</label>
+        <input id="p" type="text">
 
-        <button id="button1">Update Instructor</button>
-        <button id="button2"> Get Instructors </button>
+        <label for="quantity" class="col-lg-2 control-label">ProductID</label>
+        <input id="quantity" type="number">
+
+        <button id="button1">Add Transaction</button>
+        <button id="button2">Get Transaction</button>
 
     </div>
 
@@ -179,52 +180,24 @@
         var Coursetro = CoursetroContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
         console.log(Coursetro);
 
-        var instructorEvent = Coursetro.instructorInfo({},'latest');
-
-        instructorEvent.watch(function (err, result) {
-            if (!err) {
-                if (result.blockHash != $("#instrans").html()) 
-                    $("#loader").hide();
-                    
-                $("#insTrans").html('Block hash: ' +result.blockHash);
-                $("#instructor").html(web3.toAscii(result.args.fName) + ' ' + web3.toAscii(result.args.lName) + ' (' + result.args.age + ' years old)');
-            } else {
-                $("#loader").hide();
-            }
-        });
-
-        Coursetro.countInstructors((err, res) => {
-            if (res){
-                console.log(res);
-                $("#countIns").html(res.c + ' Instructors'); 
-            }
-        });
+        var transid;
 
         $("#button1").click(function() {
             $("#loader").show();
-            Coursetro.setInstructor(web3.eth.defaultAccount, $("#age").val(), $("#fName").val(),$("#lName").val(), (err, res) => {
+            transid = Transaction.setTransaction(web3.eth.defaultAccount, $("#fName").val(), $("#tName").val(),$("#p").val(),$("#quantity").val(), (err, res) => {
                 if (err) 
                     $("#loader").hide();
-        })
+        });
         });
 
         $("#button2").click(function() {
-            Coursetro.getInstructors((err, res) => {
-                if(res)
-                {
-                    
-                    var a = res[0];
-                    Coursetro.getInstructor(a, (err,res) => {
-                       if(res)
-                        {console.log("age="+res[0]);
-                         console.log("fname="+web3.toAscii(res[1]));
-                         console.log("lname="+web3.toAscii(res[2]));}
-                    });
-                    
-                }
+            for(var i=0; i<transid.length; i++){
+               Transaction.getTransaction(i, (err,res) => {
+               if(res){
+                    $("details").html("<b>Transaction<b><hr>From Business="+res[0]+"<br>To Business="+res[1]+"<br>ProductID="+res[2]+"<br>Product quantity"+res[3]+"<br>"); 
+                    }
             });
-        });
-
+        });          
 
     </script>
 </body>

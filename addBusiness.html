@@ -22,10 +22,8 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
     <div class="container">
 
         <h1>Company Details</h1>
-        <span id="countIns"></span>
-
+        
         <h2 id="business"></h2>
-        <span id="insTrans"></span>
         <hr>
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
@@ -33,26 +31,35 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
         <label for="GSTIN" class="col-lg-2 control-label">GSTIN</label>
         <input id="GSTIN" type="text">
 
-        <label for="Entity" class="col-lg-2 control-label">Type of Entity</label>
-        <select>
+        <label for="entity" class="col-lg-2 control-label">Type of Entity</label>
+        <select id="entity">
         	<option value="Proprietor">Proprietor</option>
         	<option value="HUF">HUF</option>
         	<option value="Partnership Firm">Partnership Firm</option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
-        	<option value=""></option>
+        	<option value="LLP">LLP</option>
+        	<option value="Company">Company</option>
+        	<option value="AOP">AOP</option>
+        	<option value="BOI">BOI</option>
+        	<option value="Local Authority">Local Authority</option>
+        	<option value="Government">Government</option>
         </select>
-        <input id="Entity" type="text">
 
-        <label for="age" class="col-lg-2 control-label">Instructor Age</label>
-        <input id="age" type="text">
+        <label for="name" class="col-lg-2 control-label">Legal Name/ Trade Name of Business</label>
+        <input id="name" type="text">
 
-        <button id="button1">Update Instructor</button>
-        <button id="button2"> Get Instructors </button>
+        <label for="category" class="col-lg-2 control-label">Category of taxpayer</label>
+        <select id="category">
+            <option value=0>Resident</option>
+            <option value=1>Composition</option>
+            <option value=2>Non-Resident</option>
+            <option value=3>ISD</option>
+            <option value=4>Tax Deductor</option>
+            <option value=5>E-commerce operator</option>
+            <option value=6>UN Agencies</option>
+        </select>
 
+        <button id="button1">Update Business</button>
+        <button id="button2">View Businesses</button>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -197,51 +204,31 @@ Category of Taxpayer - Regular, Composition, Non-Resident, ISD
         var Coursetro = CoursetroContract.at('0xee1cc92ef810f0097ec0da8c47636b57e555495c');
         console.log(Coursetro);
 
-        var instructorEvent = Coursetro.instructorInfo({},'latest');
-
-        instructorEvent.watch(function (err, result) {
-            if (!err) {
-                if (result.blockHash != $("#instrans").html()) 
-                    $("#loader").hide();
-                    
-                $("#insTrans").html('Block hash: ' +result.blockHash);
-                $("#instructor").html(web3.toAscii(result.args.fName) + ' ' + web3.toAscii(result.args.lName) + ' (' + result.args.age + ' years old)');
-            } else {
-                $("#loader").hide();
-            }
-        });
-
-        Coursetro.countInstructors((err, res) => {
-            if (res){
-                console.log(res);
-                $("#countIns").html(res.c + ' Instructors'); 
-            }
-        });
-
         $("#button1").click(function() {
             $("#loader").show();
-            Coursetro.setInstructor(web3.eth.defaultAccount, $("#age").val(), $("#fName").val(),$("#lName").val(), (err, res) => {
-                if (err) 
-                    $("#loader").hide();
+            Transaction.setBusiness($("#GSTIN").val(), $("#name").val(), $("#category").val(), (err, res) => {
+                if (res) 
+                    $("#details").html("Processing the request to add business<br>Refresh for other operations.");
         })
         });
 
         $("#button2").click(function() {
-            Coursetro.getInstructors((err, res) => {
+            Transaction.getBusinesses((err, res) => {
                 if(res)
                 {
                     
-                    var a = res[0];
-                    Coursetro.getInstructor(a, (err,res) => {
+                    var gstin = res;
+                    for(var i=0; i<a.length; i++){
+                       Transaction.getBusiness(gstin[i], (err,res) => {
                        if(res)
-                        {console.log("age="+res[0]);
-                         console.log("fname="+web3.toAscii(res[1]));
-                         console.log("lname="+web3.toAscii(res[2]));}
-                    });
+                        {$("details").html("<b>Business<b><hr>Name="+res[0]+"<br>Category="+res[1]+"<br>");
+                    }); 
+                    }
                     
-                }
+                    
+                    }
+                });
             });
-        });
 
 
     </script>
