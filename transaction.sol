@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-contract Transaction{
+contract Transactions{
     
 	struct Business{
 		bytes16 name;
@@ -26,6 +26,10 @@ contract Transaction{
 	}
 	mapping(uint => Transaction) transactions;
 	uint nexttransid;
+
+	function Transactions() public{
+       nexttransid = 0;
+   }
 
 	function setBusiness(bytes16 _GSTIN, bytes16 _name, uint _category){
 		var business = businesses[_GSTIN];
@@ -66,16 +70,20 @@ contract Transaction{
 		return productid;
 	}
 
-	function getBusiness(bytes16 gstin) public view returns(bytes16, uint){
-		return (businesses[gstin].name, businesses[gstin].category);
+	function getBusiness(bytes16 gstin) public view returns(bytes16, uint, bytes16){
+		return (businesses[gstin].name, businesses[gstin].category, gstin);
 	}
 
-	function getProduct(bytes16 prodid) public view returns(bytes16, bytes16, uint){
-		return (products[prodid].hsn, products[prodid].name, products[prodid].rate);
+	function getProduct(bytes16 prodid) public view returns(bytes16, bytes16, uint, bytes16){
+		return (products[prodid].hsn, products[prodid].name, products[prodid].rate, prodid);
 	}
 
-	function getTransaction(uint transactionid) public view returns (bytes16, bytes16, bytes16, uint){
-		return (transactions[transactionid].from, transactions[transactionid].to, transactions[transactionid].p, transactions[transactionid].quantity);
+	function getTransactions() public view returns(uint){
+		return nexttransid;
+	}
+
+	function getTransaction(uint transactionid) public view returns (bytes16, bytes16, bytes16, uint, uint){
+		return (transactions[transactionid].from, transactions[transactionid].to, transactions[transactionid].p, transactions[transactionid].quantity, transactionid);
 	}
 
 }
