@@ -214,7 +214,7 @@ def p_functiondec(p):
 	functiondec : function id openparam paramlist closeparam newline
 	'''
 	p[0]={}
-	p[0]["value"] = "function "+p[2]["value"]+"("+p[4]["value"]+")\n"
+	p[0]["value"] = "function "+p[2]["value"]+"("+p[4]["value"]+") public\n"
 	p[0]["id"] = p[2]["value"]
 	if not any(d.get("name", None) == p[2]["value"] for d in status):
 		status.append({"name": p[2]["value"], "complex": "function", "returntype":"", "dd":"nd"})

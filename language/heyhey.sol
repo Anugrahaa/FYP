@@ -5,7 +5,7 @@ contract heyhey
 	int y = 10 ;
 	int[] x=[1,2,3];
 	string b ;
-	function tax(int x, char b)
+	function tax(int x, char b) public
 		{
 			if(x==y){
 			e=10;
