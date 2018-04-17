@@ -2,126 +2,236 @@ import ply.yacc as yacc
 import sys
 from lexer import tokens
 
+symbol_table = []
+status = []
+complex_type = False
+type_name = ""
+
 def p_start(p):
 	'start : PROBLEM ID newline program'
-	print "heyy"
+	p[0]= "contract " + p[2] + p[3]["value"] +"{ \n" + p[4]["value"] + "\n}\n"
+	print "START:\n\n"
 
 def p_program(p):
-	'program : statement'
-	pass
+	'program : block'
+	p[0]={}
+	p[0]["value"] = p[1]["value"]
+	
+	print "PROGRAM: "+p[0]["value"]
 def p_newline(p):
 	'''
-	newline : NEWLINE newline
-		   | NEWLINE
+	newline : NEWLINE
 	'''
-	pass
-
+	p[0] = {}
+	p[0]["value"] = "\n"
+	
+	print p[0]["value"]
 def p_statement(p):
 	'''
-	statement : block
-			 | ifstatement 
+	statement : ifstatement 
 			 | whilestatement 
 			 | dowhilestatement
-			 | CONTINUE newline
-			 | BREAK newline
+			 | continue newline
+			 | break newline
 			 | returnstatement
 			 | simplestatement
 			 | empty
 			 | newline
 	'''
-	pass
+	i=1
+	p[0] = {}
+	p[0]["value"]=""
+	while i<len(p):
+		p[0]["value"]+= p[i]["value"]+ "\n"
+		i+=1
+	print "STATEMENT: "+p[0]["value"]
 def p_block(p):
 	'''
 	block : statement
 		 | statement block
 	'''
-	pass
+	p[0]={}
+	p[0]["value"] = p[1]["value"]
+	if len(p)>2:
+		p[0]["value"]+=p[2]["value"]
+	print "BLOCK:" + p[0]["value"]
 def p_ifstatement(p):
 	'''
-	ifstatement : IF OPENPARAM expression CLOSEPARAM statement
-			   | IF OPENPARAM expression CLOSEPARAM statement ELSE statement
+	ifstatement : if openparam expression closeparam newline begin block end
+			   | if openparam expression closeparam newline begin block end else newline begin block end
 	'''
-	pass
+	p[0]={}
+	p[0]["value"] = "if("+p[3]["value"]+"){\n"+p[7]["value"]+"\n}\n"
+	if len(p)==14:
+		p[0]["value"]+= "else{\n"+p[12]["value"]+"\n}\n"
+	
+	print p[0]["value"]
 def p_whilestatement(p):
 	'''
-	whilestatement : WHILE OPENPARAM expression CLOSEPARAM newline statement
+	whilestatement : while openparam expression closeparam newline begin block end
 	'''
-	pass
+	p[0]={}
+	p[0]["value"] = "while("+p[3]["value"]+"){\n"+p[7]["value"]+"\n}\n"
+	
+	print p[0]["value"]
 def p_dowhilestatement(p):
-	'dowhilestatement : DO statement WHILE OPENPARAM expression CLOSEPARAM newline'
-	pass
-
+	'dowhilestatement : do newline begin block end newline while openparam expression closeparam'
+	p[0]={}
+	p[0]["value"] = "do{\n"+p[4]["value"]+"\n}while("+p[9]["value"]+");\n"
+	
+	print p[0]["value"]
 def p_returnstatement(p):
-	'returnstatement : RETURN expression newline'
-	pass
-
+	'''returnstatement : empty
+						| return expression newline'''
+	p[0]={}
+	if len(p)>2:
+		p[0]["value"] = "return "+p[2]["value"]+";\n"
+		p[0]["id"] = p[2]["value"]
+	else:
+		p[0]["value"] = ""
+		p[0]["id"] = ""
+	
+	print p[0]["value"]
 def p_simplestatement(p):
 	'''
 	simplestatement : decs
 					| expression
 	'''
-	pass
-
+	p[0]={}
+	p[0]["value"] = p[1]["value"]+";"
+	
+	print p[0]["value"]
 def p_decs(p):
 	'''
-	decs : dec newline decs
-		| dec newline
+	decs : dec decs
+		| dec
 	'''
-	pass
-
+	p[0]={}
+	p[0]["value"] = p[1]["value"]
+	if len(p)>2:
+		p[0]["value"]+=p[2]["value"]
+		
+	print p[0]["value"]
 def p_dec(p):
 	'''
 	dec : vardec
 		| arraydec
-		| functiondec
 		| functiondefn
+		| functiondec
 		| structuredec
 	'''
-	pass
-
+	p[0]={}
+	p[0]["value"] = p[1]["value"]+"\n"
+	
+	print p[0]["value"]
 def p_vardec(p):
-	'vardec : type iddec'
-	pass
+	'vardec : type iddec newline'
+	p[0]={}
+	p[0]["value"] = p[1]["value"]+" "+p[2]["value"]+";"
+	
+	global symbol_table, status, complex_type, type_name
+	
+	for i in xrange(1, len(p[2]["symtab"])):
+		if not any(d.get("name",None) == p[2][i]["id"] for d in status):
+			status.append({"name": p[2]["symtab"][i]["id"], "complex":"variable", "type":p[1]["value"], "dd":p[2]["symtab"][i]["dd"], "value": p[2]["symtab"][i]["value"]})
+		else:
+			raise "SyntaxError"
 
+	print p[0]["value"]
 def p_iddec(p):
 	'''
-	iddec : ID newline
-		| ID COMMA iddec
-		| ID EQUALS literal newline
-		| ID EQUALS literal COMMA iddec
+	iddec : id 
+		| id comma iddec
+		| id equals literal 
+		| id equals literal comma iddec
 	'''
+	p[0]={}
+	p[0]["value"] = ""
+	p[0]["symtab"] = []
+	i=1
+	while i<len(p):
+		p[0]["value"]+=p[i]["value"]+" "
+		if p[i]["value"]!=',' and p[i]["value"]!='=' and p[i-1]["value"]!='=':
+			if i==len(p)-1 or p[i+1]["value"]!='=':
+				d = "nd"
+				value = ""
+			else:
+				d = "d"
+				value = p[i+2]["value"]
+			p[0]["symtab"].append({"id": p[i]["value"], "dd": d, "value":value})
 
+		i+=1
+	
+	print p[0]["value"]
 def p_arraydec(p):
 	'''
-	arraydec : ARRAY type ID newline
-			| ARRAY type ID EQUALS OPENARRAY literalslist CLOSEARRAY newline
+	arraydec : array type id newline
+			| array type id equals openarray literalslist closearray newline
 	'''
-	pass
-
+	p[0] = {}
+	p[0]["value"] = ""
+	p[0]["value"] = p[2]["value"] +" " + p[3]["value"]+ "[]"
+	if len(p)>5:
+		p[0]["value"] += "=["+p[6]["value"]+"]"
+		dd="d"
+		value = "["+p[6]["value"]+"]"
+	else:
+		dd="nd"
+		value = ""
+	global status
+	if not any(d.get("name",None) == p[3]["value"] for d in status):
+		status.append({"name": p[3]["value"], "complex": "array", "type": p[2]["value"], "dd":dd, "value": value, "length": len(value.strip("[").strip("]").split(","))})
+	p[0]["value"]+=";"
+	
+	print p[0]["value"]
 def p_functiondec(p):
 	'''
-	functiondec : FUNCTION ID OPENPARAM paramlist CLOSEPARAM
-			   | FUNCTION ID OPENPARAM paramlist CLOSEPARAM newline
+	functiondec : function id openparam paramlist closeparam newline
 	'''
-	pass
-
+	p[0]={}
+	p[0]["value"] = "function "+p[2]["value"]+"("+p[4]["value"]+")\n"
+	p[0]["id"] = p[2]["value"]
+	if not any(d.get("name", None) == p[2]["value"] for d in status):
+		status.append({"name": p[2]["value"], "complex": "function", "returntype":"", "dd":"nd"})
+	
+	print p[0]["value"]
 def p_paramlist(p):
 	'''
-	paramlist : type ID
-				| type ID COMMA paramlist
+	paramlist : type id
+				| type id COMMA paramlist
 				| empty
 	'''
-	pass
+	p[0]={}	
+	if len(p)==2:
+		p[0]["value"] = p[1]["value"]
+	else:
+		p[0]["value"] = p[1]["value"]+" "+p[2]["value"]
+		if len(p)>3:
+			p[0]["value"]+=", "+p[4]["value"]
 
+	print p[0]["value"]
 def p_functiondefn(p):
 	'''
-	functiondefn : functiondec newline BEGIN block returnstatement END newline
+	functiondefn : functiondec begin block returnstatement end
 	'''
-	pass
+	p[0]={}
+	p[0]["value"] = p[1]["value"]+"{"+p[3]["value"]+p[4]["value"]+"\n}\n"
+	insert_index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["id"]), None)
+	if p[4]["id"]!="":
+		return_index = next((index for (index, d) in enumerate(status) if d["name"] == p[4]["id"]), None)
+		status[insert_index]["returntype"] = status[return_index]["type"]
+	else:
+		status[insert_index]["returntype"] = ""
+	status[insert_index]["dd"] = "d"
 
+	
+	print p[0]["value"]
 def p_structuredec(p):
-	'structuredec : STRUCTURE ID newline BEGIN newline decs END newline'
-
+	'structuredec : structure id newline begin newline decs end newline'
+	p[0]={}
+	p[0]["value"]="struct "+p[2]["value"]+"{\n"+p[6]["value"]+"\n}\n"
+	status.append({"name": p[2]["value"], "complex": "structure", "dd": "d"})
+	print p[0]["value"]
 def p_literal(p):
 	'''
 	literal : STRINGLITERAL
@@ -131,28 +241,42 @@ def p_literal(p):
 		   | TRUE
 		   | FALSE
 	'''
-	pass
-
+	p[0] = {}
+	p[0]["value"] = p[1]
+	
+	print p[0]["value"]
 def p_literalslist(p):
 	'''
 	literalslist : literal
-				| literal COMMA literalslist
+				 | literal comma literalslist
 	'''
-	pass
+	i=1
+	p[0]={}
+	p[0]["value"]=""
+	while i<len(p):
+		p[0]["value"] += p[i]["value"]
+		i+=1
+	print p[0]["value"]
 def p_expression(p):
 	'''
-	expression : expression INCREMENT
-			  | expression DECREMENT
-			  | unaryop expression
+	expression : unaryop expression
 			  | indexaccess
 			  | memberaccess
 			  | functioncall
-			  | OPENPARAM expression CLOSEPARAM
+			  | openparam expression closeparam
 			  | expression biop expression
 			  | primaryexpression
 			  | expression newline
+			  | expression equals expression
 	'''
-	pass
+	i=1
+	p[0]={}
+	p[0]["value"]=""
+	while i<len(p):
+		p[0]["value"]+=p[i]["value"]
+		i+=1
+
+	print p[0]["value"]
 def p_unaryop(p):
 	'''
 	unaryop : INCREMENT
@@ -162,7 +286,15 @@ def p_unaryop(p):
 		   | MINUS
 		   | PERCENTAGE
 	'''
-	pass
+	p[0]={}
+	if p[1]=="%%":
+		p[0]["value"] = "*100"
+	if p[1]=="invert":
+		p[0]["value"] = "!"
+	else:
+		p[0]["value"]=p[1]
+	
+	print p[0]["value"]
 def p_biop(p):
 	'''
 	biop : MULTIPLY
@@ -179,32 +311,83 @@ def p_biop(p):
 		| EQUALCOMPARISON
 		| NOTEQUALS
 	'''
-	pass
+	p[0]={}
+	if p[1]=="and":
+		p[0]["value"]="&&"
+	elif p[1]=="or":
+		p[0]["value"]="||"
+	elif p[1]=="is":
+		p[0]["value"] = "=="
+	elif p[1]=="is not":
+		p[0]["value"] = "!="
+	else:
+		p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_equals(p):
+	'equals : EQUALS'
+	p[0]={}
+	p[0]["value"] = p[1]
+	print p[0]["value"]
 def p_indexaccess(p):
-	'indexaccess : expression OPENARRAY expression CLOSEARRAY'
-	pass
+	'indexaccess : expression openarray expression closearray'
+	p[0]={}
+	p[0]["value"] = p[1]["value"]+"["+p[3]["value"]+"]"
+	print "array place: "+p[3]["value"]+" "+p[1]["value"]
+	if not any(d.get("name", None) == p[1]["value"] for d in status):
+		print "no such entity"
+		raise SyntaxError
+	else:
+		length_index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["value"]), None)
+		print "in else"
+		print status[length_index]
+		if status[length_index]["complex"]=="array" and int(status[length_index]["length"])<int(p[3]["value"]):
+			raise SyntaxError
+	print p[0]["value"]
 def p_memberaccess(p):
-	'memberaccess : expression OF ID'
-	pass
+	'memberaccess : expression of id'
+	p[0]={}
+	if not any(d.get("name", None) == p[1]["value"] for d in status):
+		raise SyntaxError
+	else:
+		length_index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["value"]), None)
+		if status[length_index]["complex"]!="structure":
+			raise SyntaxError
+	p[0]["value"] = p[3]["value"]+"."+p[1]["value"]
+	print p[0]["value"]
 def p_functioncall(p):
 	'functioncall : ID OPENPARAM callarguments CLOSEPARAM'
-	pass
+	if not any(d.get("name", None) == p[1]["value"] for d in status):
+		raise SyntaxError
+	else:
+		index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["value"]), None)
+		if status[index]["complex"]!="function":
+			raise SyntaxError
+	p[0]["value"] = p[1]["value"]+"("+p[3]["value"]+")"
+	print p[0]["value"]
 def p_callarguments(p):
 	'''
-	callarguments : ID
+	callarguments : id
 				 | literalslist
-				 | ID COMMA callarguments
-				 | literalslist COMMA callarguments
+				 | id comma callarguments
+				 | literalslist comma callarguments
 	'''
-	pass
-
+	i=1
+	p[0]={}
+	p[0]["value"]=""
+	while i<len(p):
+		p[0]["value"]+=p[i]["value"]
+		i+=1
+	
+	print p[0]["value"]
 def p_primaryexpression(p):
 	'''
 	primaryexpression : literal
-					 | ID
+					 | idknown
 	'''
-	pass
-
+	p[0]={}
+	p[0]["value"]=p[1]["value"]
+	
+	print p[0]["value"]
 def p_type(p):
 	'''
 	type : INTEGER
@@ -212,34 +395,150 @@ def p_type(p):
 		| STRING
 		| BOOLEAN
 		| DECIMAL
+		| VAR
 	'''
-	pass
+	p[0] = {}
+	if p[1]=="integer":
+		p[0]["value"] = "int"
+	if p[1]=="character":
+		p[0]["value"] = "char"
+	if p[1]=="text":
+		p[0]["value"] = "string"
+	if p[1]=="istrue":
+		p[0]["value"] = "bool"
+	if p[1]=="decimal":
+		p[0]["value"] = "fixed"
+	if p[1]=="$":
+		p[0]["value"] = "var"
+	print p[0]["value"]
 
-
+def p_idknown(p):
+	'idknown : ID'
+	if not any(d.get("name", None) == p[1] for d in status):
+		raise SyntaxError
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_id(p):
+	'id : ID'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_comma(p):
+	'comma : COMMA'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_of(p):
+	'of : OF'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_openarray(p):
+	'openarray : OPENARRAY'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_closearray(p):
+	'closearray : CLOSEARRAY'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_openparam(p):
+	'openparam : OPENPARAM'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_closeparam(p):
+	'closeparam : CLOSEPARAM'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_begin(p):
+	'begin : BEGIN'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_end(p):
+	'end : END'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_structure(p):
+	'structure : STRUCTURE'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_function(p):
+	'function : FUNCTION'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_array(p):
+	'array : ARRAY'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_return(p):
+	'return : RETURN'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_do(p):
+	'do : DO'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_while(p):
+	'while : WHILE'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_if(p):
+	'if : IF'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_else(p):
+	'else : ELSE'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_break(p):
+	'break : BREAK'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
+def p_continue(p):
+	'continue : CONTINUE'
+	p[0]={}
+	p[0]["value"]=p[1]
+	print p[0]["value"]
 def p_empty(p):
 	'empty : '
 	pass
 
-def p_error(p):
-    print "Syntax error in input!"
+def p_error(token):
+	if token is not None:
+		print("Line "+str(token.lineno)+", illegal token: "+token.value)
+	else:
+	    print("Syntax error in input!")
 
 taxparser = yacc.yacc(debug=0)
-
 def main():
+	global status
 	try:
-		# data = open(sys.argv[1]).read()
-		data = '''PROBLEM heyhey
-array x '''
+		data = open(sys.argv[1]).read()
 		data = data.lower()
-		print data
+		print(data)
 	except IOError:
 		print("exit")
 		sys.exit()
 	if not data:
 		print("laa")
 	result = taxparser.parse(data)
-	# tok = ply.lex.tokens()
-	print(result)
+	print('--------------------------------------------\n'+result)
+	print('--------------------------------------------\n'+str(status))
 
 if __name__ == '__main__':
 	main()

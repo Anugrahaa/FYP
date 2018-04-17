@@ -1,1 +1,31 @@
 PROBLEM heyhey
+
+integer y = 10
+array integer x = [1,2,3]
+
+text b
+calculate tax(integer x, character b)
+begin
+	if(x is y)
+	begin
+	e=10
+	end
+
+	do
+	begin
+		e=5
+		x[2]
+	end
+	while(1)
+	return g
+
+end
+
+set p
+begin
+integer x
+array text y
+end
+
+
+ 

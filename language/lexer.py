@@ -21,6 +21,7 @@ reserved = {
 	'array':'ARRAY',
 	'text': 'STRING',
 	'decimal': 'DECIMAL',
+	'$': 'VAR',
 	'istrue': 'BOOLEAN',
 	'and': 'AND',
 	'or': 'OR',
@@ -81,7 +82,7 @@ def t_ignore_COMMENT(t):
 t_ignore = " \t"
 
 def t_ID(t):
-	r'[a-zA-Z_$][a-zA-Z0-9]*'
+	r'[a-zA-Z_][a-zA-Z0-9]*'
 	t.type = reserved.get(t.value, 'ID')
 	return t
 
@@ -104,9 +105,9 @@ lex.lex(reflags=re.IGNORECASE)
 # 	if not tok: break
 # 	print tok
 
-# data = open('sample.taxsol').read()
-# lex.input(data.lower())
-# while True:
-# 	tok = lex.token()
-# 	if not tok: break
-# 	print tok
+data = open('sample.taxsol').read()
+lex.input(data.lower())
+while True:
+	tok = lex.token()
+	if not tok: break
+	print tok

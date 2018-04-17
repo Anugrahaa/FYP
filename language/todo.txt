@@ -1,0 +1,43 @@
+1. remove additional spaces, semicolons
+2. count nesting and give indentation
+3. symbol table lookup
+4. dynamic typing
+
+symbol table:
+1.name 2.type 3.declared/defined 4.value
+int /
+char /
+string /
+boolean /
+decimal /
+var /
+array: 1.length
+struct: 1.members(dict)
+
+function: 1.name 2.returntype 3.declared/defined 4.paramtypes
+
+id
+comma
+of
+
+openarray
+closearray
+openparam
+closeparam
+
+structure
+begin
+end
+
+function
+array
+
+equals
+
+return
+while
+if
+else
+do
+break
+continue
