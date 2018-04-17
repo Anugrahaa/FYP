@@ -41,5 +41,5 @@ contract Creditledger{
 		}
 		return totalbal;
 	} 
-
+	
 }

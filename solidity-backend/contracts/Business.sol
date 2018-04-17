@@ -31,33 +31,51 @@ contract Business{
 	
 	Utility u;
 
-	function setBusiness(bytes16 _name, bytes16 _GSTIN, bytes16 _statecode) public {
+	function Business(bytes16 _name, bytes16 _GSTIN, bytes16 _statecode) public {
 		name = _name;
 		GSTIN = _GSTIN;
 		statecode = _statecode;
 		u.businessAdd(_name,_GSTIN,_statecode);
 	}
 
-	function addInvoice(bytes16 _billtype, uint _daysafter, bytes16 _gstin,bytes16 _prname, bytes16 _hsn, bytes16 _prcategory, uint _rate, uint _quantity,uint _igst, uint _cgst, uint _sgst) public {
+	function addInvoice(bytes16 _billtype, uint _daysafter, bytes16 _gstin) public returns (uint){
 		if(_billtype == "sales"){
 			Invoice _bill = new Invoice();
+			uint id = salesbills.length;
 			//enter the number of days issue date differs from due date
 			_bill.setDueDate(_daysafter);
-			//loop for no_of_products and provide gst rates for each product
-			_bill.addProduct(_prname,_hsn,_prcategory,_rate,_quantity,_igst,_cgst,_sgst);
-		    _bill.billed(GSTIN,_gstin);
-		    _bill.getInvoiceTotal();
+			_bill.billed(GSTIN,_gstin);
 		    salesbills.push(_bill) -1;
+		    return id;
 		}
 		else{
 			Invoice _bill_ = new Invoice();
-			_bill_.setDueDate(_daysafter);
-			//loop for no_of_products
-			_bill_.addProduct(_prname,_hsn,_prcategory,_rate,_quantity,_igst,_cgst,_sgst);
+			uint _id = purchasebills.length;
+			_bill_.setDueDate(_daysafter);		    
 		    _bill_.billed(GSTIN,_gstin);
-		    _bill_.getInvoiceTotal();
 		    purchasebills.push(_bill_) -1;
+		    return _id;
 		}
+	}
+
+	function salesAddProd(uint _id,bytes16 _prname, bytes16 _hsn, bytes16 _prcategory, uint _rate, uint _quantity,uint _igst, uint _cgst, uint _sgst) public{
+		salesbills[_id].addProduct(_prname,_hsn,_prcategory,_rate,_quantity,_igst,_cgst,_sgst);
+		s_updateTotals(_id);
+	}
+
+	function purchaseAddProd(uint _id,bytes16 _prname, bytes16 _hsn, bytes16 _prcategory, uint _rate, uint _quantity,uint _igst, uint _cgst, uint _sgst)public{
+		purchasebills[_id].addProduct(_prname,_hsn,_prcategory,_rate,_quantity,_igst,_cgst,_sgst);
+		p_updateTotals(_id);
+	}
+
+	function s_updateTotals(uint _id) public{
+		salesbills[_id].getInvoiceTotal();
+		salesbills[_id].updateGSTTotals();
+	}
+
+	function p_updateTotals(uint _id) public{
+		purchasebills[_id].getInvoiceTotal();
+		purchasebills[_id].updateGSTTotals();
 	}
 
 	function updateCreditLedger(bytes16 _desp) public{
