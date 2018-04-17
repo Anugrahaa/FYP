@@ -42,10 +42,22 @@ reserved = {
 	'set': 'STRUCTURE',
 	'do': 'DO',
 	'skip': 'CONTINUE',
-	'of' : 'OF'
+	'of' : 'OF',
+	'import': 'IMPORT'
 }
 
-tokens = tokens + reserved.values()
+tax = {
+	'business': 'BUSINESS',
+	'cash_ledger': 'CASH_LEDGER',
+	'credit_ledger': 'CREDIT_LEDGER',
+	'liability_ledger': 'LIABILITY_LEDGER',
+	'invoice': 'INVOICE',
+	'product': 'PRODUCT',
+	'transaction': 'TRANSACTION',
+	'utility': 'UTILITY'
+}
+
+tokens = tokens + reserved.values() + tax.values()
 
 t_INCREMENT = r'\+\+'
 t_DECREMENT = r'--'
@@ -83,7 +95,7 @@ t_ignore = " \t"
 
 def t_ID(t):
 	r'[a-zA-Z_][a-zA-Z0-9]*'
-	t.type = reserved.get(t.value, 'ID')
+	t.type = reserved.get(t.value, tax.get(t.value, 'ID'))
 	return t
 
 def t_NEWLINE(t):

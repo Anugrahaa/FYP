@@ -1,4 +1,5 @@
 PROBLEM heyhey
+import transaction
 
 integer y = 10
 array integer x = [1,2,3]
@@ -26,6 +27,8 @@ begin
 integer x
 array text y
 end
+
+integer y=60
 
 
  

@@ -1,6 +1,9 @@
 import ply.yacc as yacc
 import sys
 from lexer import tokens
+sys.path.insert(0, './Tax/')
+from tax_functions import *
+from prettify import prettify
 
 symbol_table = []
 status = []
@@ -8,16 +11,38 @@ complex_type = False
 type_name = ""
 
 def p_start(p):
-	'start : PROBLEM ID newline program'
-	p[0]= "contract " + p[2] + p[3]["value"] +"{ \n" + p[4]["value"] + "\n}\n"
-	print "START:\n\n"
+	'start : PROBLEM ID newline imports newline program'
+	p[0]= p[4]["value"]+"\ncontract " + p[2] + p[3]["value"] +"{ \n" + p[6]["value"] + "\n}\n"
+	print "START:\n\n"+p[0]
+
+def p_imports(p):
+	'''imports : IMPORT import imports
+				| IMPORT import'''
+
+	p[0]={}
+	p[0]["value"] = "import ./Helpers/"+p[2]["value"]+";\n"
+	if len(p)==4:
+		p[0]["value"]+=p[3]["value"]
+
+def p_import(p):
+	'''import : UTILITY
+				| PRODUCT
+				| INVOICE
+				| BUSINESS
+				| LIABILITY_LEDGER
+				| CREDIT_LEDGER
+				| CASH_LEDGER
+				| TRANSACTION '''
+	p[0]={}
+	p[0]["value"] = p[1]+".sol"
+	create_files(p[1])
 
 def p_program(p):
 	'program : block'
 	p[0]={}
 	p[0]["value"] = p[1]["value"]
 	
-	print "PROGRAM: "+p[0]["value"]
+
 def p_newline(p):
 	'''
 	newline : NEWLINE
@@ -25,7 +50,7 @@ def p_newline(p):
 	p[0] = {}
 	p[0]["value"] = "\n"
 	
-	print p[0]["value"]
+
 def p_statement(p):
 	'''
 	statement : ifstatement 
@@ -44,7 +69,7 @@ def p_statement(p):
 	while i<len(p):
 		p[0]["value"]+= p[i]["value"]+ "\n"
 		i+=1
-	print "STATEMENT: "+p[0]["value"]
+
 def p_block(p):
 	'''
 	block : statement
@@ -54,7 +79,7 @@ def p_block(p):
 	p[0]["value"] = p[1]["value"]
 	if len(p)>2:
 		p[0]["value"]+=p[2]["value"]
-	print "BLOCK:" + p[0]["value"]
+
 def p_ifstatement(p):
 	'''
 	ifstatement : if openparam expression closeparam newline begin block end
@@ -65,7 +90,7 @@ def p_ifstatement(p):
 	if len(p)==14:
 		p[0]["value"]+= "else{\n"+p[12]["value"]+"\n}\n"
 	
-	print p[0]["value"]
+
 def p_whilestatement(p):
 	'''
 	whilestatement : while openparam expression closeparam newline begin block end
@@ -73,13 +98,13 @@ def p_whilestatement(p):
 	p[0]={}
 	p[0]["value"] = "while("+p[3]["value"]+"){\n"+p[7]["value"]+"\n}\n"
 	
-	print p[0]["value"]
+
 def p_dowhilestatement(p):
 	'dowhilestatement : do newline begin block end newline while openparam expression closeparam'
 	p[0]={}
 	p[0]["value"] = "do{\n"+p[4]["value"]+"\n}while("+p[9]["value"]+");\n"
 	
-	print p[0]["value"]
+
 def p_returnstatement(p):
 	'''returnstatement : empty
 						| return expression newline'''
@@ -91,7 +116,7 @@ def p_returnstatement(p):
 		p[0]["value"] = ""
 		p[0]["id"] = ""
 	
-	print p[0]["value"]
+
 def p_simplestatement(p):
 	'''
 	simplestatement : decs
@@ -100,7 +125,7 @@ def p_simplestatement(p):
 	p[0]={}
 	p[0]["value"] = p[1]["value"]+";"
 	
-	print p[0]["value"]
+
 def p_decs(p):
 	'''
 	decs : dec decs
@@ -111,7 +136,7 @@ def p_decs(p):
 	if len(p)>2:
 		p[0]["value"]+=p[2]["value"]
 		
-	print p[0]["value"]
+
 def p_dec(p):
 	'''
 	dec : vardec
@@ -123,7 +148,7 @@ def p_dec(p):
 	p[0]={}
 	p[0]["value"] = p[1]["value"]+"\n"
 	
-	print p[0]["value"]
+
 def p_vardec(p):
 	'vardec : type iddec newline'
 	p[0]={}
@@ -137,7 +162,7 @@ def p_vardec(p):
 		else:
 			raise "SyntaxError"
 
-	print p[0]["value"]
+
 def p_iddec(p):
 	'''
 	iddec : id 
@@ -162,7 +187,7 @@ def p_iddec(p):
 
 		i+=1
 	
-	print p[0]["value"]
+
 def p_arraydec(p):
 	'''
 	arraydec : array type id newline
@@ -170,7 +195,7 @@ def p_arraydec(p):
 	'''
 	p[0] = {}
 	p[0]["value"] = ""
-	p[0]["value"] = p[2]["value"] +" " + p[3]["value"]+ "[]"
+	p[0]["value"] = p[2]["value"] +"[] " + p[3]["value"]
 	if len(p)>5:
 		p[0]["value"] += "=["+p[6]["value"]+"]"
 		dd="d"
@@ -183,7 +208,7 @@ def p_arraydec(p):
 		status.append({"name": p[3]["value"], "complex": "array", "type": p[2]["value"], "dd":dd, "value": value, "length": len(value.strip("[").strip("]").split(","))})
 	p[0]["value"]+=";"
 	
-	print p[0]["value"]
+
 def p_functiondec(p):
 	'''
 	functiondec : function id openparam paramlist closeparam newline
@@ -194,7 +219,7 @@ def p_functiondec(p):
 	if not any(d.get("name", None) == p[2]["value"] for d in status):
 		status.append({"name": p[2]["value"], "complex": "function", "returntype":"", "dd":"nd"})
 	
-	print p[0]["value"]
+
 def p_paramlist(p):
 	'''
 	paramlist : type id
@@ -209,7 +234,7 @@ def p_paramlist(p):
 		if len(p)>3:
 			p[0]["value"]+=", "+p[4]["value"]
 
-	print p[0]["value"]
+
 def p_functiondefn(p):
 	'''
 	functiondefn : functiondec begin block returnstatement end
@@ -225,13 +250,13 @@ def p_functiondefn(p):
 	status[insert_index]["dd"] = "d"
 
 	
-	print p[0]["value"]
+
 def p_structuredec(p):
 	'structuredec : structure id newline begin newline decs end newline'
 	p[0]={}
 	p[0]["value"]="struct "+p[2]["value"]+"{\n"+p[6]["value"]+"\n}\n"
 	status.append({"name": p[2]["value"], "complex": "structure", "dd": "d"})
-	print p[0]["value"]
+
 def p_literal(p):
 	'''
 	literal : STRINGLITERAL
@@ -244,7 +269,7 @@ def p_literal(p):
 	p[0] = {}
 	p[0]["value"] = p[1]
 	
-	print p[0]["value"]
+
 def p_literalslist(p):
 	'''
 	literalslist : literal
@@ -256,7 +281,7 @@ def p_literalslist(p):
 	while i<len(p):
 		p[0]["value"] += p[i]["value"]
 		i+=1
-	print p[0]["value"]
+
 def p_expression(p):
 	'''
 	expression : unaryop expression
@@ -276,7 +301,7 @@ def p_expression(p):
 		p[0]["value"]+=p[i]["value"]
 		i+=1
 
-	print p[0]["value"]
+
 def p_unaryop(p):
 	'''
 	unaryop : INCREMENT
@@ -294,7 +319,7 @@ def p_unaryop(p):
 	else:
 		p[0]["value"]=p[1]
 	
-	print p[0]["value"]
+
 def p_biop(p):
 	'''
 	biop : MULTIPLY
@@ -322,38 +347,22 @@ def p_biop(p):
 		p[0]["value"] = "!="
 	else:
 		p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_equals(p):
 	'equals : EQUALS'
 	p[0]={}
 	p[0]["value"] = p[1]
-	print p[0]["value"]
+
 def p_indexaccess(p):
 	'indexaccess : expression openarray expression closearray'
 	p[0]={}
 	p[0]["value"] = p[1]["value"]+"["+p[3]["value"]+"]"
-	print "array place: "+p[3]["value"]+" "+p[1]["value"]
-	if not any(d.get("name", None) == p[1]["value"] for d in status):
-		print "no such entity"
-		raise SyntaxError
-	else:
-		length_index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["value"]), None)
-		print "in else"
-		print status[length_index]
-		if status[length_index]["complex"]=="array" and int(status[length_index]["length"])<int(p[3]["value"]):
-			raise SyntaxError
-	print p[0]["value"]
+
 def p_memberaccess(p):
 	'memberaccess : expression of id'
 	p[0]={}
-	if not any(d.get("name", None) == p[1]["value"] for d in status):
-		raise SyntaxError
-	else:
-		length_index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["value"]), None)
-		if status[length_index]["complex"]!="structure":
-			raise SyntaxError
 	p[0]["value"] = p[3]["value"]+"."+p[1]["value"]
-	print p[0]["value"]
+
 def p_functioncall(p):
 	'functioncall : ID OPENPARAM callarguments CLOSEPARAM'
 	if not any(d.get("name", None) == p[1]["value"] for d in status):
@@ -363,7 +372,7 @@ def p_functioncall(p):
 		if status[index]["complex"]!="function":
 			raise SyntaxError
 	p[0]["value"] = p[1]["value"]+"("+p[3]["value"]+")"
-	print p[0]["value"]
+
 def p_callarguments(p):
 	'''
 	callarguments : id
@@ -378,7 +387,7 @@ def p_callarguments(p):
 		p[0]["value"]+=p[i]["value"]
 		i+=1
 	
-	print p[0]["value"]
+
 def p_primaryexpression(p):
 	'''
 	primaryexpression : literal
@@ -387,7 +396,7 @@ def p_primaryexpression(p):
 	p[0]={}
 	p[0]["value"]=p[1]["value"]
 	
-	print p[0]["value"]
+
 def p_type(p):
 	'''
 	type : INTEGER
@@ -414,106 +423,104 @@ def p_type(p):
 
 def p_idknown(p):
 	'idknown : ID'
-	if not any(d.get("name", None) == p[1] for d in status):
-		raise SyntaxError
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_id(p):
 	'id : ID'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_comma(p):
 	'comma : COMMA'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_of(p):
 	'of : OF'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_openarray(p):
 	'openarray : OPENARRAY'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_closearray(p):
 	'closearray : CLOSEARRAY'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_openparam(p):
 	'openparam : OPENPARAM'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_closeparam(p):
 	'closeparam : CLOSEPARAM'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_begin(p):
 	'begin : BEGIN'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_end(p):
 	'end : END'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_structure(p):
 	'structure : STRUCTURE'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_function(p):
 	'function : FUNCTION'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_array(p):
 	'array : ARRAY'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_return(p):
 	'return : RETURN'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_do(p):
 	'do : DO'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_while(p):
 	'while : WHILE'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_if(p):
 	'if : IF'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_else(p):
 	'else : ELSE'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_break(p):
 	'break : BREAK'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_continue(p):
 	'continue : CONTINUE'
 	p[0]={}
 	p[0]["value"]=p[1]
-	print p[0]["value"]
+
 def p_empty(p):
 	'empty : '
 	pass
@@ -528,7 +535,8 @@ taxparser = yacc.yacc(debug=0)
 def main():
 	global status
 	try:
-		data = open(sys.argv[1]).read()
+		input = open(sys.argv[1])
+		data = input.read()
 		data = data.lower()
 		print(data)
 	except IOError:
@@ -538,7 +546,27 @@ def main():
 		print("laa")
 	result = taxparser.parse(data)
 	print('--------------------------------------------\n'+result)
+
 	print('--------------------------------------------\n'+str(status))
+	input.close()
+
+	i = 8
+	filename = ""
+	while result[i]!="\n":
+		i+=1
+	while result[i] == "\n":
+		i+=1
+	i+=9
+	while result[i]!="\n":
+		filename += result[i] 
+		i+=1
+	filename+=".sol"
+	print filename
+	output = open(filename, "w+")
+	output.write("pragma solidity ^0.4.4;\n")
+	output.write(result)
+	output.close()
+	prettify(filename)
 
 if __name__ == '__main__':
 	main()
