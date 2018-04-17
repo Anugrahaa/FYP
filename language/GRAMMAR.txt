@@ -1,0 +1,125 @@
+	start: PROBLEM ID program
+
+	program: statement
+
+	newline: NEWLINE newline
+			| NEWLINE
+
+	statement: block
+			 | ifstatement 
+			 | whilestatement 
+			 | forstatement  
+			 | dowhilestatement
+			 | CONTINUE newline
+			 | BREAK newline
+			 | returnstatement
+			 | simplestatement
+			 | empty
+			 | newline
+
+	block: statement
+		 | statement block
+
+	ifstatement: IF OPENPARAM expression CLOSEPARAM statement
+			   | IF OPENPARAM expression CLOSEPARAM statement ELSE statement
+
+	whilestatement: WHILE OPENPARAM expression CLOSEPARAM statement
+
+	returnstatement: RETURN expression newline
+
+	simplestatement: decs
+				   | expression
+
+	decs: dec newline decs
+		| dec newline
+
+	dec: vardec
+		| arraydec
+		| functiondec
+		| functiondefn
+		| structuredec
+
+
+	vardec: type id
+
+	iddec: ID newline
+	  		| ID, iddec
+	  		| ID EQUALS literal newline
+	  		| ID EQUALS literal, iddec
+
+	arraydec: ARRAY type ID newline
+			| ARRAY type ID EQUALS OPENARRAY literalslist CLOSEARRAY newline
+	
+	functiondec: FUNCTION ID OPENPARAM paramlist CLOSEPARAM
+			   | FUNCTION ID OPENPARAM paramlist CLOSEPARAM newline
+
+	paramlist: type ID
+				| type ID, paramlist
+				| empty
+
+	functiondefn: functiondec newline BEGIN block returnstatement END newline
+
+	structuredec: STRUCTURE ID newline BEGIN newline decs END newline
+
+	literal: STRINGLITERAL
+		   | INTEGERLITERAL
+		   | CHARACTERLITERAL
+		   | DECIMALLITERAL
+		   | TRUE
+		   | FALSE
+
+	literalslist: literal
+			| literal COMMA literalslist	
+
+	expression: expression INCREMENT
+			  | expression DECREMENT
+			  | unaryop expression
+			  | indexaccess
+			  | memberaccess
+			  | functioncall
+			  | OPENPARAM expression CLOSEPARAM
+			  | expression biop expression
+			  | primaryexpression
+			  | expression newline
+
+	unaryop: INCREMENT
+		   | DECREMENT
+		   | NOT
+		   | PLUS
+		   | MINUS
+		   | PERCENTAGE
+
+	biop: MULITPLY
+		| DIVIDE
+		| MODULO
+		| PLUS
+		| MINUS
+		| AND
+		| OR
+		| LT
+		| GT
+		| LTE
+		| GTE
+		| EQUALCOMPARISON
+		| NOTEQUALS
+
+	indexaccess: expression OPENARRAY expression CLOSEARRAY
+
+	memberaccess: ID OF ID
+
+	functioncall: ID OPENPARAM callarguments CLOSEPARAM
+
+	callarguments: ID
+				 | literalslist
+				 | ID COMMA callarguments
+				 | literalslist COMMA callarguments
+
+	primaryexpression: literal
+					 | ID
+
+
+	type: INTEGER
+		| CHARACTER
+		| STRING
+		| BOOLEAN
+		| DECIMAL
