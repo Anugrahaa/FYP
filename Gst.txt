@@ -1,0 +1,14 @@
+list of GSTINs{
+	AP	07AAACB5343E1Z3 07 ballarpur
+	AP	07AADCB2230M1ZV bilt
+	Kerala	32AAACB5343E1ZA murugappan
+	Karnataka	29AAACB5343E2ZW	yedulenka
+	Madhya Pradesh	23AAACB5343E1Z9	 biocorp
+
+}
+
+
+list of Products{
+	
+
+}

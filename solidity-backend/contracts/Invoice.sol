@@ -12,11 +12,13 @@ contract Invoice{
 	bytes16 public bill_to_GSTIN;
 
 	uint due_date;
-	uint total;
-	uint taxtotal;
+	
 	uint igst_total;
 	uint cgst_total;
 	uint sgst_total;
+	
+	uint total;
+	uint taxtotal;
 	uint invoice_total;
 
 	struct productdetails{
@@ -126,6 +128,7 @@ contract Invoice{
  	}
 
  	function getIGSTTotal() public constant returns (uint){
+ 		igst_total =0;
  		for(uint i=1;i<=productids.length;i++){
  			igst_total += getIGSTamount(productids[i]);
  		}
@@ -133,6 +136,7 @@ contract Invoice{
  	}
 
  	function getCGSTTotal() public constant returns (uint){
+ 		cgst_total=0;
  		for(uint i=1;i<=productids.length;i++){
  			cgst_total += getCGSTamount(productids[i]);
  		}
@@ -140,6 +144,7 @@ contract Invoice{
  	}
 
  	function getSGSTTotal() public constant returns (uint){
+ 		sgst_total=0;
  		for(uint i=1;i<=productids.length;i++){
  			sgst_total += getSGSTamount(productids[i]);
  		}
@@ -147,6 +152,7 @@ contract Invoice{
  	}
 
  	function getTaxTotal() public constant returns (uint){
+ 		taxtotal=0;
  		for(uint i=1;i<=productids.length;i++){
  			taxtotal += getTaxAmount(productids[i]);
  		}
@@ -154,12 +160,26 @@ contract Invoice{
  	}
 
  	function getInvoiceTotal() public constant returns (uint){
+ 		total=0;
+ 		taxtotal=0;
+ 		invoice_total=0;
  		for(uint i=1;i<=productids.length;i++){
  			total += getAmount(productids[i]);
  			taxtotal += getTaxAmount(productids[i]);
  		}
  		invoice_total = total + taxtotal; 
  		return invoice_total;
+ 	}
+
+ 	function updateGSTTotals() public{
+ 		igst_total =0;
+ 		cgst_total =0;
+ 		sgst_total =0;
+ 		for(uint i=1;i<=productids.length;i++){
+ 			igst_total += getIGSTamount(productids[i]);
+ 			cgst_total += getCGSTamount(productids[i]);
+ 			sgst_total += getSGSTamount(productids[i]);	
+ 		}
  	}
 
 }
