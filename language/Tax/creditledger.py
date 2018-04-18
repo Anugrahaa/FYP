@@ -4,7 +4,6 @@ import os.path
 
 def create_creditledger():
 	write_txn()
-	write_invoice()
 
 	return '''pragma solidity ^0.4.4;
 import "./Transaction.sol";

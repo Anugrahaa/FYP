@@ -16,12 +16,13 @@ tokens = [
 ]
 
 reserved = {
+	'number': 'UINT',
 	'integer': 'INTEGER',
 	'character': 'CHAR',
 	'array':'ARRAY',
 	'text': 'STRING',
 	'decimal': 'DECIMAL',
-	'$': 'VAR',
+	'var': 'VAR',
 	'istrue': 'BOOLEAN',
 	'and': 'AND',
 	'or': 'OR',
@@ -43,7 +44,9 @@ reserved = {
 	'do': 'DO',
 	'skip': 'CONTINUE',
 	'of' : 'OF',
-	'import': 'IMPORT'
+	'import': 'IMPORT',
+	'add': 'NEW',
+	'$':'DOLLAR'
 }
 
 tax = {
@@ -54,7 +57,8 @@ tax = {
 	'invoice': 'INVOICE',
 	'product': 'PRODUCT',
 	'transaction': 'TRANSACTION',
-	'utility': 'UTILITY'
+	'utility': 'UTILITY',
+	'ledgers': 'LEDGERS'
 }
 
 tokens = tokens + reserved.values() + tax.values()
@@ -117,7 +121,7 @@ lex.lex(reflags=re.IGNORECASE)
 # 	if not tok: break
 # 	print tok
 
-data = open('sample.taxsol').read()
+data = open('ledgers.taxl').read()
 lex.input(data.lower())
 while True:
 	tok = lex.token()

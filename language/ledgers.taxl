@@ -1,0 +1,50 @@
+PROBLEM ledger
+
+import utility
+import ledgers
+
+Business id = add newBusiness("ballarpur","07AAACB5343E1Z3","07")
+
+
+Business b = add newBusiness("murugappan","32AAACB5343E1ZA","32")
+
+
+Business c = add newBusiness("biocorp","23AAACB5343E1Z9","23")
+
+
+Business d = add newBusiness("Bheem","07AADCB2230M1ZV","07")
+
+
+#params are : 
+#0- billtype (sales invoice / purchase invoice)
+#1- daysafter (due date) 
+#2- gstin(of the buyer/biller)
+#returns: invoice id
+
+number id = addInvoice("sales",15,"07AADCB2230M1ZV") of a
+
+#params are:
+#0- product name
+#1- hsn of the product
+#2- product category
+#3- Price per unit (rate)
+#4- quantity of product
+#5- igst percentage on product
+#6- cgst percentage on product
+#7- sgst percentage on product
+
+salesAddProd(id,"Soaps","34031100","Sanitary",30,400,18,9,9) of a
+salesAddProd(id,"BeautyProduct","33051010","Cosmetics",100,40,18,9,9) of a
+salesAddProd(id,"Jutebags","42022240","Utility",100,500,12,6,6) of a
+
+
+number _id = addInvoice("purchase",15,"23AAACB5343E1Z9") of a
+
+purchaseAddProd(_id,"Printed Circuits","85340000","Electronics",800,20,18,9,9) of a
+purchaseAddProd(_id,"Tooling machinery","85340000","Industrial machinery",2500,4,18,9,9) of a
+
+updateCreditLedger("Fortnightly returns") of a
+
+updateLiabilityLedger("Fortnightly liabilities") of a
+
+

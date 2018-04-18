@@ -2,7 +2,6 @@ from utility import *
 import os.path
 
 def create_product():
-	write_utility()
 	return '''pragma solidity ^0.4.4;
 
 import "./Utility.sol";

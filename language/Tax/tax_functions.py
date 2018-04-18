@@ -10,9 +10,12 @@ from business import *
 import os.path
 
 def create_files(p):
+
 	if not os.path.exists('./Helpers'):
 		os.makedirs('./Helpers')
+
 	output = './Helpers/'+p+'.sol'
+	
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
@@ -40,6 +43,10 @@ def create_files(p):
 
 	elif p == "transaction":
 		result = create_transaction()
+
+	elif p == "ledgers":
+		write_ledgers()
+		return
 
 	else:
 		return

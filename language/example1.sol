@@ -31,7 +31,7 @@ a.salesAddProd(id,"Jutebags","42022240","Utility",100,500,12,6,6);
 uint _id = a.addInvoice("purchase",15,"23AAACB5343E1Z9");
 
 a.purchaseAddProd(_id,"Printed Circuits","85340000","Electronics",800,20,18,9,9);
-a.purchaseAddProd(_id,"Tooling machinery","85350000","Industrial machinery",2500,4,18,9,9);
+a.purchaseAddProd(_id,"Tooling machinery","85340000","Industrial machinery",2500,4,18,9,9);
 
 a.updateCreditLedger("Fortnightly returns");
 

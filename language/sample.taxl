@@ -1,4 +1,4 @@
-PROBLEM heyhey
+PROBLEM example
 import transaction
 
 integer y = 10
@@ -7,28 +7,26 @@ array integer x = [1,2,3]
 text b
 calculate tax(integer x, character b)
 begin
-	if(x is y)
+	if(y is 0)
 	begin
-	e=10
+	t="hi"
 	end
 
 	do
 	begin
-		e=5
-		x[2]
+		y = y+5
 	end
-	while(1)
-	return g
+	while(y<100)
+	return y
 
 end
 
 set p
 begin
-integer x
-array text y
+integer i
+array text s
 end
 
-integer y=60
 
 
  

@@ -1,4 +1,6 @@
 def create_utility():
+	write_product()
+	write_business()
 	return '''pragma solidity ^0.4.4;
 
 import "./Product.sol";
@@ -118,3 +120,21 @@ contract Utility{
 	}
 
 }'''
+
+
+def write_product():
+	output = './Helpers/product.sol'
+	if os.path.isfile(output):
+		return
+	outputfile = open(output)
+	outputfile.write(create_product)
+	outputfile.close()
+
+
+def write_business():
+	output = './Helpers/business.sol'
+	if os.path.isfile(output):
+		return
+	outputfile = open(output)
+	outputfile.write(create_business)
+	outputfile.close()

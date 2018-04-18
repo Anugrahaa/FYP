@@ -5,22 +5,23 @@ sys.path.insert(0, './Tax/')
 from tax_functions import *
 from prettify import prettify
 
+library = []
 symbol_table = []
 status = []
 complex_type = False
 type_name = ""
 
 def p_start(p):
-	'start : PROBLEM ID newline imports newline program'
-	p[0]= p[4]["value"]+"\ncontract " + p[2] + p[3]["value"] +"{ \n" + p[6]["value"] + "\n}\n"
+	'start : PROBLEM ID newline imports program'
+	p[0]= p[4]["value"]+"\ncontract " + p[2] + p[3]["value"] +"{ \n" + p[5]["value"] + "\n}\n"
 	print "START:\n\n"+p[0]
 
 def p_imports(p):
-	'''imports : IMPORT import imports
-				| IMPORT import'''
+	'''imports : IMPORT import newline imports
+				| IMPORT import newline'''
 
 	p[0]={}
-	p[0]["value"] = "import ./Helpers/"+p[2]["value"]+";\n"
+	p[0]["value"] = "import './Helpers/"+p[2]["value"]+"';\n"
 	if len(p)==4:
 		p[0]["value"]+=p[3]["value"]
 
@@ -32,9 +33,14 @@ def p_import(p):
 				| LIABILITY_LEDGER
 				| CREDIT_LEDGER
 				| CASH_LEDGER
-				| TRANSACTION '''
+				| TRANSACTION
+				| LEDGERS '''
 	p[0]={}
+	if p[1]=="ledgers":
+		p[0]["value"] = "liability_ledger.sol;\nimport './Helpers/cash_ledger.sol';\nimport './Helpers/credit_ledger.sol'"
 	p[0]["value"] = p[1]+".sol"
+	global library
+	library.append(p[1])
 	create_files(p[1])
 
 def p_program(p):
@@ -69,6 +75,7 @@ def p_statement(p):
 	while i<len(p):
 		p[0]["value"]+= p[i]["value"]+ "\n"
 		i+=1
+	print "statement: "+p[0]["value"]
 
 def p_block(p):
 	'''
@@ -293,6 +300,7 @@ def p_expression(p):
 			  | primaryexpression
 			  | expression newline
 			  | expression equals expression
+			  | new expression
 	'''
 	i=1
 	p[0]={}
@@ -300,7 +308,7 @@ def p_expression(p):
 	while i<len(p):
 		p[0]["value"]+=p[i]["value"]
 		i+=1
-
+	print "expression: "+p[0]["value"]
 
 def p_unaryop(p):
 	'''
@@ -362,16 +370,14 @@ def p_memberaccess(p):
 	'memberaccess : expression of id'
 	p[0]={}
 	p[0]["value"] = p[3]["value"]+"."+p[1]["value"]
+	print "member access: "+p[0]["value"] 
 
 def p_functioncall(p):
-	'functioncall : ID OPENPARAM callarguments CLOSEPARAM'
-	if not any(d.get("name", None) == p[1]["value"] for d in status):
-		raise SyntaxError
-	else:
-		index = next((index for (index, d) in enumerate(status) if d["name"] == p[1]["value"]), None)
-		if status[index]["complex"]!="function":
-			raise SyntaxError
+	'''functioncall : ID OPENPARAM callarguments CLOSEPARAM
+					| taxtypes  OPENPARAM callarguments CLOSEPARAM'''
+	p[0]={}
 	p[0]["value"] = p[1]["value"]+"("+p[3]["value"]+")"
+	print "call: "+p[0]["value"]
 
 def p_callarguments(p):
 	'''
@@ -386,6 +392,7 @@ def p_callarguments(p):
 	while i<len(p):
 		p[0]["value"]+=p[i]["value"]
 		i+=1
+	print "callarguments: "+p[0]["value"]
 	
 
 def p_primaryexpression(p):
@@ -405,21 +412,82 @@ def p_type(p):
 		| BOOLEAN
 		| DECIMAL
 		| VAR
+		| UINT
+		| taxtypes
 	'''
 	p[0] = {}
 	if p[1]=="integer":
 		p[0]["value"] = "int"
-	if p[1]=="character":
+	elif p[1]=="character":
 		p[0]["value"] = "char"
-	if p[1]=="text":
+	elif p[1]=="text":
 		p[0]["value"] = "string"
-	if p[1]=="istrue":
+	elif p[1]=="istrue":
 		p[0]["value"] = "bool"
-	if p[1]=="decimal":
+	elif p[1]=="decimal":
 		p[0]["value"] = "fixed"
-	if p[1]=="$":
+	elif p[1]=="var":
 		p[0]["value"] = "var"
+	elif p[1]=="number":
+		p[0]["value"] = "uint"
+	else:
+		p[0]["value"] = p[1]["value"]
 	print p[0]["value"]
+
+def p_taxtypes(p):
+	'''
+	taxtypes : BUSINESS
+			 | CASH_LEDGER
+			 | CREDIT_LEDGER
+			 | INVOICE
+			 | LIABILITY_LEDGER
+			 | PRODUCT
+			 | TRANSACTION
+			 | UTILITY
+	'''
+	p[0] = {}
+	global library
+	print library
+
+	if not any (d=="invoice" for d in library):
+		if p[1]=="invoice":
+			raise SyntaxError
+		else:
+			pass
+	else:
+		p[0]["value"] = p[1]
+		return
+
+	if not any (d=="utility" for d in library):
+		if p[1]=="utility":
+			raise SyntaxError
+		else:
+			pass
+	else:
+		p[0]["value"] = p[1]
+		return
+
+	if not any (d=="ledgers" for d in library):
+		if p[1] in ["liability_ledger","cash_ledger","credit_ledger"]:
+			raise SyntaxError
+		else:
+			pass
+	else:
+		if p[1] in ["liability_ledger","cash_ledger","credit_ledger","transaction"]:
+			p[0]["value"] = p[1]
+		else:
+			pass
+
+	if not any (d=="transaction" for d in library):
+		if p[1]=="transaction":
+			raise SyntaxError
+		else:
+			pass
+	else:
+		if p[1]=="transaction":
+			p[0]["value"] = p[1]
+		else:
+			pass
 
 def p_idknown(p):
 	'idknown : ID'
@@ -518,6 +586,11 @@ def p_break(p):
 
 def p_continue(p):
 	'continue : CONTINUE'
+	p[0]={}
+	p[0]["value"]=p[1]
+
+def p_new(p):
+	'new : NEW'
 	p[0]={}
 	p[0]["value"]=p[1]
 
