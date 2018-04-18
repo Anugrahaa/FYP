@@ -1,5 +1,6 @@
 PROBLEM example
 import transaction
+import ledgers
 
 integer y = 10
 array integer x = [1,2,3]

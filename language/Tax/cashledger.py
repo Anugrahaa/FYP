@@ -57,7 +57,7 @@ def write_txn():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_transaction)
+	outputfile.write(create_transaction())
 	outputfile.close()
 
 def write_invoice():
@@ -65,5 +65,5 @@ def write_invoice():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_invoice)
+	outputfile.write(create_invoice())
 	outputfile.close()

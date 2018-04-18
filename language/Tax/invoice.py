@@ -176,5 +176,5 @@ def write_product():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_transaction)
+	outputfile.write(create_product())
 	outputfile.close()

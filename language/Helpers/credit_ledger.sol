@@ -1,11 +1,4 @@
-from transaction import *
-from invoice import *
-import os.path
-
-def create_creditledger():
-	write_txn()
-
-	return '''pragma solidity ^0.4.4;
+pragma solidity ^0.4.4;
 import "./Transaction.sol";
 
 contract Creditledger{
@@ -49,22 +42,4 @@ contract Creditledger{
 		return totalbal;
 	} 
 
-}'''
-
-
-def write_txn():
-	output = './Helpers/transaction.sol'
-	if os.path.isfile(output):
-		return
-	outputfile = open(output, "w+")
-	outputfile.write(create_transaction())
-	outputfile.close()
-
-
-def write_invoice():
-	output = './Helpers/invoice.sol'
-	if os.path.isfile(output):
-		return
-	outputfile = open(output, "w+")
-	outputfile.write(create_invoice())
-	outputfile.close()
+}

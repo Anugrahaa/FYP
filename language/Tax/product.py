@@ -33,12 +33,3 @@ contract Product{
 
 }
 '''
-
-
-def write_utility():
-	output = './Helpers/utility.sol'
-	if os.path.isfile(output):
-		return
-	outputfile = open(output)
-	outputfile.write(create_transaction)
-	outputfile.close()

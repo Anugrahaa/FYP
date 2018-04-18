@@ -64,5 +64,5 @@ def write_invoice():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output)
-	outputfile.write(create_transaction)
+	outputfile.write(create_transaction())
 	outputfile.close()

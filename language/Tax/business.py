@@ -1,5 +1,8 @@
 from invoice import *
 import os.path
+from cashledger import *
+from creditledger import *
+from lialedger import *
 
 def create_business():
 	write_invoice()
@@ -110,7 +113,7 @@ def write_invoice():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_transaction)
+	outputfile.write(create_transaction())
 	outputfile.close()
 
 def write_ledgers():
@@ -118,19 +121,19 @@ def write_ledgers():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_transaction)
+	outputfile.write(create_lialedger())
 	outputfile.close()
 
 	output = './Helpers/cash_ledger.sol'
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_transaction)
+	outputfile.write(create_cashledger())
 	outputfile.close()
 
 	output = './Helpers/credit_ledger.sol'
 	if os.path.isfile(output):
 		return
 	outputfile = open(output, "w+")
-	outputfile.write(create_transaction)
+	outputfile.write(create_creditledger())
 	outputfile.close()

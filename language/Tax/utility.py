@@ -1,3 +1,5 @@
+from business import *
+from product import *
 def create_utility():
 	write_product()
 	write_business()
@@ -127,7 +129,7 @@ def write_product():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output)
-	outputfile.write(create_product)
+	outputfile.write(create_product())
 	outputfile.close()
 
 
@@ -136,5 +138,5 @@ def write_business():
 	if os.path.isfile(output):
 		return
 	outputfile = open(output)
-	outputfile.write(create_business)
+	outputfile.write(create_business())
 	outputfile.close()
